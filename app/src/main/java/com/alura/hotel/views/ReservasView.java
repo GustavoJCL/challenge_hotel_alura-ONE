@@ -296,7 +296,7 @@ public class ReservasView extends JFrame {
     txtValor.setHorizontalAlignment(SwingConstants.CENTER);
     txtValor.setForeground(Color.BLACK);
     txtValor.setBounds(78, 328, 43, 33);
-    txtValor.setEditable(false);
+    txtValor.setEditable(true);
     txtValor.setFont(new Font("Roboto Black", Font.BOLD, 17));
     txtValor.setBorder(javax.swing.BorderFactory.createEmptyBorder());
     panel.add(txtValor);
@@ -313,6 +313,8 @@ public class ReservasView extends JFrame {
     // en efectivo" }));
     DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
     List<FormaPago> formaPagos = formaPagoDao.findAll();
+    // System.out.println("Praise the Omnissiah");
+    // System.out.println(formaPagos.toString());
     for (FormaPago fp : formaPagos) {
       model.addElement(fp.getNombre());
     }
@@ -325,12 +327,19 @@ public class ReservasView extends JFrame {
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
+            FormaPago formaPago = formaPagoDao.findByName(txtFormaPago.getSelectedItem().toString()).get(0);
+            System.out.println(formaPago.getNombre());
+
+            Float valor = Float.parseFloat(txtValor.getText());
+
+            Date fechaEntradaDate = ReservasView.txtFechaEntrada.getDate();
+            Date fechaSalidaDate = ReservasView.txtFechaSalida.getDate();
             if (ReservasView.txtFechaEntrada.getDate() != null
-                && ReservasView.txtFechaSalida.getDate() != null) {
-              Float valor = Float.parseFloat(txtValor.getText());
-              FormaPago formaPago = (FormaPago) txtFormaPago.getSelectedItem();
-              Date fechaEntradaDate = ReservasView.txtFechaEntrada.getDate();
-              Date fechaSalidaDate = ReservasView.txtFechaSalida.getDate();
+                && ReservasView.txtFechaSalida.getDate() != null
+                && formaPago != null) {
+              // FormaPago formaPago = new
+              // FormaPago(txtFormaPago.getSelectedItem().toString());
+
               Reserva reserva = new Reserva(fechaEntradaDate, fechaSalidaDate, valor, formaPago);
               // reservaDao.create(reserva);
               RegistroHuesped registro = new RegistroHuesped(formaPagoDao, huespedDao, reservaDao, usuarioDao, reserva);

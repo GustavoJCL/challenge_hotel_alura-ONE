@@ -15,9 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.Format;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -347,18 +345,18 @@ public class RegistroHuesped extends JFrame {
             String nacionalidadString = txtNacionalidad.getSelectedItem().toString();
             String telefonoString = txtTelefono.getText();
             Date fechaNacimiento = txtFechaN.getDate();
-            List<Reserva> reservasList = new ArrayList<Reserva>();
-            reservasList.add(reserva);
+            // List<Reserva> reservasList = new ArrayList<Reserva>();
+            // reservasList.add(reserva);
             // String nombre, String apellido, String nacionalidad,
             // Date fechaNacimiento, String telefono,
-            // List<Reserva> reservas
+            // List<Reserva> reservas;
             Huesped huesped = new Huesped(
                 nombreString,
                 apellidoString,
                 nacionalidadString,
                 fechaNacimiento,
                 telefonoString,
-                reservasList);
+                reserva);
             huespedDao.create(huesped);
           }
         });

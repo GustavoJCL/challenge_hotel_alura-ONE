@@ -14,6 +14,6 @@ public class App {
         // System.out.println(new App().getGreeting());
         HotelService hotelService = new HotelService();
         hotelService.launchUI();
-        hotelService.close();
+        // hotelService.close();
     }
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 28, 2023 at 02:23 PM
+-- Generation Time: Sep 28, 2023 at 03:48 PM
 -- Server version: 11.1.2-MariaDB
 -- PHP Version: 8.2.9
 
@@ -29,17 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `forma_pago` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(40) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `forma_pago`
---
-
-INSERT INTO `forma_pago` (`id`, `nombre`) VALUES
-(1, 'Tarjeta de Credito'),
-(2, 'Transferencia'),
-(3, 'Efectivo');
+  `nombre` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -49,13 +40,13 @@ INSERT INTO `forma_pago` (`id`, `nombre`) VALUES
 
 CREATE TABLE `huesped` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(50) NOT NULL,
-  `apellido` varchar(50) NOT NULL,
-  `fechaNacimiento` date NOT NULL,
-  `telefono` varchar(20) NOT NULL,
-  `nacionalidad` varchar(50) NOT NULL,
-  `reserva` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `apellido` varchar(255) DEFAULT NULL,
+  `fechaNacimiento` datetime DEFAULT NULL,
+  `nacionalidad` varchar(255) DEFAULT NULL,
+  `nombre` varchar(255) DEFAULT NULL,
+  `telefono` varchar(255) DEFAULT NULL,
+  `reserva` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -65,12 +56,12 @@ CREATE TABLE `huesped` (
 
 CREATE TABLE `reserva` (
   `id` int(11) NOT NULL,
-  `fechaEntrada` date NOT NULL,
-  `FechaSalida` date NOT NULL,
-  `valor` double NOT NULL,
-  `id_reserva` int(11) NOT NULL,
-  `forma_pago` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `fechaEntrada` datetime DEFAULT NULL,
+  `fechaSalida` datetime DEFAULT NULL,
+  `idReserva` int(11) DEFAULT NULL,
+  `valor` float DEFAULT NULL,
+  `formaPago` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -107,14 +98,14 @@ ALTER TABLE `forma_pago`
 --
 ALTER TABLE `huesped`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_huesped_reserva1_idx` (`reserva`);
+  ADD KEY `FKgl1qrsoxmras69drku6ratb4m` (`reserva`);
 
 --
 -- Indexes for table `reserva`
 --
 ALTER TABLE `reserva`
-  ADD PRIMARY KEY (`id`,`forma_pago`),
-  ADD KEY `fk_reserva_forma_pago_idx` (`forma_pago`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FKcv50gum731krvwgw3atgmi8jw` (`formaPago`);
 
 --
 -- Indexes for table `usuario`
@@ -123,20 +114,26 @@ ALTER TABLE `usuario`
   ADD PRIMARY KEY (`id`);
 
 --
--- Constraints for dumped tables
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- Constraints for table `huesped`
+-- AUTO_INCREMENT for table `forma_pago`
+--
+ALTER TABLE `forma_pago`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `huesped`
 --
 ALTER TABLE `huesped`
-  ADD CONSTRAINT `fk_huesped_reserva1` FOREIGN KEY (`reserva`) REFERENCES `reserva` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for table `reserva`
+-- AUTO_INCREMENT for table `reserva`
 --
 ALTER TABLE `reserva`
-  ADD CONSTRAINT `fk_reserva_forma_pago` FOREIGN KEY (`forma_pago`) REFERENCES `forma_pago` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

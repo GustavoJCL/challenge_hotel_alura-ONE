@@ -4,12 +4,18 @@ import com.alura.hotel.dao.FormaPagoDao;
 import com.alura.hotel.dao.HuespedDao;
 import com.alura.hotel.dao.ReservaDao;
 import com.alura.hotel.dao.UsuarioDao;
+import com.alura.hotel.modelo.FormaPago;
+import com.alura.hotel.modelo.Huesped;
+import com.alura.hotel.modelo.Reserva;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -37,6 +43,11 @@ public class Busqueda extends JFrame {
   private JLabel labelExit;
   int xMouse, yMouse;
 
+  private FormaPagoDao formaPagoDao;
+  private HuespedDao huespedDao;
+  private ReservaDao reservaDao;
+  private UsuarioDao usuarioDao;
+
   /** Launch the application. */
   // public static void main(String[] args) {
   // EventQueue.invokeLater(
@@ -58,6 +69,11 @@ public class Busqueda extends JFrame {
       HuespedDao huespedDao,
       ReservaDao reservaDao,
       UsuarioDao usuarioDao) {
+    this.formaPagoDao = formaPagoDao;
+    this.huespedDao = huespedDao;
+    this.reservaDao = reservaDao;
+    this.usuarioDao = usuarioDao;
+
     setIconImage(
         Toolkit.getDefaultToolkit().getImage(Busqueda.class.getResource("/imagenes/lupa2.png")));
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,6 +113,8 @@ public class Busqueda extends JFrame {
     modelo.addColumn("Fecha Check Out");
     modelo.addColumn("Valor");
     modelo.addColumn("Forma de Pago");
+    buscarReservas("");
+
     JScrollPane scroll_table = new JScrollPane(tbReservas);
     panel.addTab(
         "Reservas",
@@ -116,6 +134,7 @@ public class Busqueda extends JFrame {
     modeloHuesped.addColumn("Nacionalidad");
     modeloHuesped.addColumn("Telefono");
     modeloHuesped.addColumn("Número de Reserva");
+    buscarHuespedes("");
     JScrollPane scroll_tableHuespedes = new JScrollPane(tbHuespedes);
     panel.addTab(
         "Huéspedes",
@@ -229,6 +248,11 @@ public class Busqueda extends JFrame {
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
+            if (panel.getSelectedIndex() == 0) {
+              buscarReservas(txtBuscar.getText());
+            } else if (panel.getSelectedIndex() == 1) {
+              buscarHuespedes(txtBuscar.getText());
+            }
           }
         });
     btnbuscar.setLayout(null);
@@ -249,6 +273,20 @@ public class Busqueda extends JFrame {
     btnEditar.setBackground(new Color(12, 138, 199));
     btnEditar.setBounds(635, 508, 122, 35);
     btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    btnEditar.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            int selectedRowIndex = tbReservas.getSelectedRow();
+            if (panel.getSelectedIndex() == 0) {
+              Reserva reserva = getSelectedEditarReserva(selectedRowIndex);
+              reservaDao.update(reserva);
+            } else if (panel.getSelectedIndex() == 1) {
+              Huesped huesped = getSelectedEditarHuesped(selectedRowIndex);
+              huespedDao.update(huesped);
+            }
+          }
+        });
     contentPane.add(btnEditar);
 
     JLabel lblEditar = new JLabel("EDITAR");
@@ -263,6 +301,20 @@ public class Busqueda extends JFrame {
     btnEliminar.setBackground(new Color(12, 138, 199));
     btnEliminar.setBounds(767, 508, 122, 35);
     btnEliminar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    btnEliminar.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            int selectedRowIndex = tbReservas.getSelectedRow();
+            if (panel.getSelectedIndex() == 0) {
+              Reserva reserva = getSelectedEliminarReserva(selectedRowIndex);
+              reservaDao.delete(reserva);
+            } else if (panel.getSelectedIndex() == 1) {
+              Huesped huesped = getSelectedEliminarHuesped(selectedRowIndex);
+              huespedDao.delete(huesped);
+            }
+          }
+        });
     contentPane.add(btnEliminar);
 
     JLabel lblEliminar = new JLabel("ELIMINAR");
@@ -285,5 +337,145 @@ public class Busqueda extends JFrame {
     int x = evt.getXOnScreen();
     int y = evt.getYOnScreen();
     this.setLocation(x - xMouse, y - yMouse);
+  }
+
+  private void buscarReservas(String searchedValue) {
+    List<Reserva> reservasValues = reservaDao.findAll();
+    List<Reserva> filteredReservas;
+    if (searchedValue != "") {
+      filteredReservas = reservasValues.stream()
+          .filter(
+              reserva -> reserva.getFormaPago().getNombre().contains(searchedValue)
+                  || reserva.getFechaEntrada().toString().contains(searchedValue)
+                  || reserva.getFechaSalida().toString().contains(searchedValue)
+                  || reserva.getValor().toString().contains(searchedValue))
+          .collect(Collectors.toList());
+      // modelo.addColumn("Numero de Reserva");
+      // modelo.addColumn("Fecha Check In");
+      // modelo.addColumn("Fecha Check Out");
+      // modelo.addColumn("Valor");
+      // modelo.addColumn("Forma de Pago");
+
+    } else {
+      filteredReservas = reservasValues;
+    }
+    for (int i = modelo.getRowCount() - 1; i >= 0; i--) {
+      modelo.removeRow(i);
+    }
+    for (Reserva reser : filteredReservas) {
+      modelo.addRow(
+          new Object[] {
+              reser.getId(), reser.getFechaEntrada().toString(),
+              reser.getFechaSalida().toString(), reser.getValor().toString(),
+              reser.getFormaPago().getNombre()
+          });
+    }
+  }
+
+  private void buscarHuespedes(String searchedValue) {
+    // modeloHuesped.addColumn("Número de Huesped");
+    // modeloHuesped.addColumn("Nombre");
+    // modeloHuesped.addColumn("Apellido");
+    // modeloHuesped.addColumn("Fecha de Nacimiento");
+    // modeloHuesped.addColumn("Nacionalidad");
+    // modeloHuesped.addColumn("Telefono");
+    // modeloHuesped.addColumn("Número de Reserva");
+    List<Huesped> huespedesValues = huespedDao.findAll();
+    List<Huesped> filteredHuespedes;
+    if (searchedValue != "") {
+      filteredHuespedes = huespedesValues.stream()
+          .filter(
+              huesped -> huesped.getNombre().contains(searchedValue)
+                  || String.valueOf(huesped.getId()).contains(searchedValue)
+                  || huesped.getApellido().contains(searchedValue)
+                  || huesped.getFechaNacimiento().toString().contains(searchedValue)
+                  || huesped.getNacionalidad().contains(searchedValue)
+                  || huesped.getTelefono().contains(searchedValue)
+                  || String.valueOf(huesped.getReservas().getId()).contains(searchedValue))
+          .collect(Collectors.toList());
+    } else {
+      filteredHuespedes = huespedesValues;
+    }
+    for (int i = modeloHuesped.getRowCount() - 1; i >= 0; i--) {
+      modeloHuesped.removeRow(i);
+    }
+    for (Huesped huesped : filteredHuespedes) {
+      modeloHuesped.addRow(
+          new Object[] {
+              huesped.getId(),
+              huesped.getNombre(),
+              huesped.getApellido(),
+              huesped.getFechaNacimiento().toString(),
+              huesped.getNacionalidad(),
+              huesped.getTelefono(),
+              String.valueOf(huesped.getReservas().getId())
+          });
+    }
+  }
+
+  private Reserva getSelectedEliminarReserva(int selectedRowIndex) {
+    if (selectedRowIndex != -1) {
+      String idValueString = (String) modelo.getValueAt(selectedRowIndex, 0);
+      int idValue = Integer.parseInt(idValueString);
+      return reservaDao.findById(idValue);
+    }
+    return null;
+  }
+
+  private Huesped getSelectedEliminarHuesped(int selectedRowIndex) {
+    if (selectedRowIndex != -1) {
+      String idValueString = (String) modeloHuesped.getValueAt(selectedRowIndex, 0);
+      int idValue = Integer.parseInt(idValueString);
+      return huespedDao.findById(idValue);
+    }
+    return null;
+  }
+
+  private Reserva getSelectedEditarReserva(int selectedRowIndex) {
+    if (selectedRowIndex != -1) {
+      String idValueString = (String) modelo.getValueAt(selectedRowIndex, 0);
+      String fechaEntradaString = (String) modelo.getValueAt(selectedRowIndex, 1);
+      String fechaSalidaString = (String) modelo.getValueAt(selectedRowIndex, 2);
+      String valorString = (String) modelo.getValueAt(selectedRowIndex, 3);
+      String formaPagoString = (String) modelo.getValueAt(selectedRowIndex, 4);
+
+      int idValue = Integer.parseInt(idValueString);
+      Date fechaEntrada = new Date(fechaEntradaString);
+      Date fechaSalida = new Date(fechaSalidaString);
+      Float valor = Float.parseFloat(valorString);
+      FormaPago formaPago = formaPagoDao.findByName(formaPagoString).get(0);
+
+      Reserva reservaModified = reservaDao.findById(idValue);
+      reservaModified.setFechaEntrada(fechaEntrada);
+      reservaModified.setFechaSalida(fechaSalida);
+      reservaModified.setValor(valor);
+      reservaModified.setFormaPago(formaPago);
+      return reservaModified;
+    }
+    return null;
+  }
+
+  private Huesped getSelectedEditarHuesped(int selectedRowIndex) {
+    if (selectedRowIndex != -1) {
+      String idValueString = (String) modeloHuesped.getValueAt(selectedRowIndex, 0);
+      String nombreString = (String) modeloHuesped.getValueAt(selectedRowIndex, 1);
+      String apellidoString = (String) modeloHuesped.getValueAt(selectedRowIndex, 2);
+      String fechaNacimientoString = (String) modeloHuesped.getValueAt(selectedRowIndex, 3);
+      String nacionalidadString = (String) modeloHuesped.getValueAt(selectedRowIndex, 4);
+      String telefonoString = (String) modeloHuesped.getValueAt(selectedRowIndex, 5);
+      String reservaString = (String) modeloHuesped.getValueAt(selectedRowIndex, 6);
+
+      int idValue = Integer.parseInt(idValueString);
+      Date fechaNacimiento = new Date(fechaNacimientoString);
+      Huesped huespedModified = huespedDao.findById(idValue);
+      huespedModified.setNombre(nombreString);
+      huespedModified.setApellido(apellidoString);
+      huespedModified.setFechaNacimiento(fechaNacimiento);
+      huespedModified.setNacionalidad(nacionalidadString);
+      huespedModified.setTelefono(telefonoString);
+      huespedModified.setReservas(reservaDao.findById(Integer.parseInt(reservaString)));
+      return huespedModified;
+    }
+    return null;
   }
 }

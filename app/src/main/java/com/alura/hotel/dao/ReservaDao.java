@@ -4,6 +4,7 @@ import com.alura.hotel.modelo.Reserva;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 public class ReservaDao {
@@ -18,9 +19,21 @@ public class ReservaDao {
   }
 
   public void create(Reserva reserva) {
-    entityManager.getTransaction().begin();
-    entityManager.persist(reserva);
-    entityManager.getTransaction().commit();
+    // entityManager.getTransaction().begin();
+    // entityManager.persist(reserva);
+    // entityManager.getTransaction().commit();
+    //
+    EntityTransaction transaction = entityManager.getTransaction();
+    try {
+      transaction.begin();
+      entityManager.persist(reserva);
+      transaction.commit();
+    } catch (Exception e) {
+      if (transaction != null && transaction.isActive()) {
+        transaction.rollback();
+      }
+      e.printStackTrace();
+    }
   }
 
   public Reserva findById(int id) {
@@ -29,7 +42,7 @@ public class ReservaDao {
 
   public List<Reserva> findAll() {
 
-    Query query = entityManager.createQuery("SELECT r FROM reserva r", Reserva.class);
+    Query query = entityManager.createQuery("SELECT r FROM Reserva r", Reserva.class);
     return query.getResultList();
   }
 

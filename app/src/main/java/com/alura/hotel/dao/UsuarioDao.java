@@ -30,7 +30,7 @@ public class UsuarioDao {
 
   public boolean findByNamePassword(String name, String password) {
     TypedQuery<Long> query = entityManager.createQuery(
-        "SELECT COUNT(u) FROM usuario u WHERE u.nombre = :name AND u.password = :password",
+        "SELECT COUNT(u) FROM Usuario u WHERE u.nombre = :name AND u.password = :password",
         Long.class);
     query.setParameter("name", name);
     query.setParameter("password", password);
@@ -39,7 +39,7 @@ public class UsuarioDao {
   }
 
   public List<Usuario> findAll() {
-    Query query = entityManager.createQuery("SELECT h FROM usuario h", Usuario.class);
+    Query query = entityManager.createQuery("SELECT h FROM Usuario h", Usuario.class);
     return query.getResultList();
   }
 

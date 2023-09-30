@@ -27,8 +27,15 @@ public class FormaPagoDao {
     return entityManager.find(FormaPago.class, id);
   }
 
+  public List<FormaPago> findByName(String name) {
+    Query query = entityManager.createQuery(
+        "SELECT f FROM FormaPago f WHERE f.nombre = :name", FormaPago.class);
+    query.setParameter("name", name);
+    return (List<FormaPago>) query.getResultList();
+  }
+
   public List<FormaPago> findAll() {
-    Query query = entityManager.createQuery("SELECT f FROM forma_pago f", FormaPago.class);
+    Query query = entityManager.createQuery("SELECT f FROM FormaPago f", FormaPago.class);
     return (List<FormaPago>) (List<FormaPago>) query.getResultList();
   }
 

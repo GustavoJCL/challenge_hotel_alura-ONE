@@ -4,6 +4,7 @@ import com.alura.hotel.modelo.Huesped;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 public class HuespedDao {
@@ -18,9 +19,20 @@ public class HuespedDao {
   }
 
   public void create(Huesped huesped) {
-    entityManager.getTransaction().begin();
-    entityManager.persist(huesped);
-    entityManager.getTransaction().commit();
+    // entityManager.getTransaction().begin();
+    // entityManager.persist(huesped);
+    // entityManager.getTransaction().commit();
+    EntityTransaction transaction = entityManager.getTransaction();
+    try {
+      transaction.begin();
+      entityManager.persist(huesped);
+      transaction.commit();
+    } catch (Exception e) {
+      if (transaction != null && transaction.isActive()) {
+        transaction.rollback();
+      }
+      e.printStackTrace();
+    }
   }
 
   public Huesped findById(int id) {
@@ -28,7 +40,7 @@ public class HuespedDao {
   }
 
   public List<Huesped> findAll() {
-    Query query = entityManager.createQuery("SELECT r FROM huesped r", Huesped.class);
+    Query query = entityManager.createQuery("SELECT r FROM Huesped r", Huesped.class);
     return query.getResultList();
   }
 

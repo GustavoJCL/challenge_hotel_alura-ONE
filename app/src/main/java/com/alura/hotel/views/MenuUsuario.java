@@ -106,6 +106,7 @@ public class MenuUsuario extends JFrame {
 
           @Override
           public void mouseClicked(MouseEvent e) {
+            // System.out.println("Praise the omnissiah");
             ReservasView reservas = new ReservasView(formaPagoDao, huespedDao, reservaDao, usuarioDao);
             reservas.setVisible(true);
             dispose();

@@ -24,6 +24,12 @@ public class Usuario {
     this.password = password;
   }
 
+  public Usuario() {
+    this.nombre = "";
+    this.apellido = "";
+    this.password = "";
+  }
+
   public int getId() {
     return id;
   }

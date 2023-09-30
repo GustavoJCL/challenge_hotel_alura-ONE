@@ -19,9 +19,14 @@ public class FormaPago {
     this.nombre = nombre;
   }
 
-  // public int getId() {
-  // return id;
-  // }
+  public FormaPago() {
+    this.nombre = "";
+  }
+
+  public int getId() {
+    return id;
+  }
+
   //
   // public void setId(int id) {
   // this.id = id;
@@ -34,4 +39,9 @@ public class FormaPago {
   public void setNombre(String nombre) {
     this.nombre = nombre;
   }
+
+  // @Override
+  // public String toString() {
+  // return nombre;
+  // }
 }

@@ -1,5 +1,5 @@
 <h1 align="center">Hotel Alura :coffee:</h1>
-![Challenge Oracle Next Education + Alura Banner](https://user-images.githubusercontent.com/91544872/189419040-c093db78-c970-4960-8aca-ffcc11f7ffaf.png)
+![Challenge Oracle Next Education + Alura Banner]()
 
 El desafio fue el desarrollo de una aplicación Desktop en Java, la cuál 
 se encargará de gestionar a los empleados, húespedes y reservas que se realicen en el Hotel Alura,
